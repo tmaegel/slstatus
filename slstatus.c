@@ -48,7 +48,7 @@ usage(void)
 int
 main(int argc, char *argv[])
 {
-	struct sigaction act;
+    struct sigaction act;
 	struct timespec start, current, diff, intspec, wait;
 	size_t i, len;
 	int sflag, ret;

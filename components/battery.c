@@ -8,6 +8,14 @@
 	#include <limits.h>
 	#include <stdint.h>
 	#include <unistd.h>
+ 
+    static const char
+    *d_bar(unsigned char p)
+    {
+        const char *s[] = { "▁", "▂", "▃", "▄", "▅", "▆", "▇", "█", "█" };
+
+        return s[((8 * p) / 100)];
+    }
 
 	static const char *
 	pick(const char *bat, const char *f1, const char *f2, char *path,
@@ -40,7 +48,7 @@
 			return NULL;
 		}
 
-		return bprintf("%d", perc);
+		return bprintf("%s %3d%%", d_bar(perc), perc);
 	}
 
 	const char *
@@ -110,7 +118,7 @@
 			h = timeleft;
 			m = (timeleft - (double)h) * 60;
 
-			return bprintf("%juh %jum", h, m);
+			return bprintf(" [ %juh %jum ] ", h, m);
 		}
 
 		return "";
