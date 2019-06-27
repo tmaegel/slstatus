@@ -64,18 +64,52 @@ static const char unknown_str[] = "n/a";
  */
 static const struct arg args[] = {
 	/* function format          argument */
-	{ netspeed_rx,      "  ↓ %3s", "wlp4s0" },
-	{ netspeed_tx,      "  ↑ %3s  •", "wlp4s0" },
-	{ kernel_release,   "  %s  •", NULL },
-	{ run_command,      "  ♫ %s", "amixer get Master | grep 'Mono:' | awk -F'[][]' '{print $2}'"},
+	/*
+     * primary bar (topbar)
+     */
+    // volume
+    { run_command,      "  ♫ %s", "amixer get Master | grep 'Mono:' | awk -F'[][]' '{print $2}'"},
 	{ run_command,      " [ %s ]  •", "amixer get Master | grep 'Mono:' | awk -F'[][]' '{print $6}'"},
-	{ run_command,      "  ☼ %s%%  •", "xbacklight -get | awk '{print int($1+0.5)}'"},
-	{ run_command,      "  BT %s  •", "rfkill list | grep hci0 -A 2 | grep -qi 'soft blocked: yes' && echo 'off' || echo 'on'"},
-	{ wifi_essid,       "  %s ", "wlp4s0" },
-	{ wifi_perc,        "[ %3s%% ]  •", "wlp4s0" },
-	{ ram_perc,         "  RAM %3s%%  •", NULL },
-	{ cpu_perc,         "  CPU %3s%%  •", NULL },
-	{ battery_perc,     "  ⚡ %s ", "BAT0" },
+	// brightness
+    { run_command,      "  ☼ %s%%  •", "xbacklight -get | awk '{print int($1+0.5)}'"},
+	// bluetooth on / off
+    { run_command,      "  BT [ %s ]  •", "/usr/local/bin/radioctl --get bluetooth"},
+	// wifi
+	{ wifi_perc,        "  %s", "wlp1s0" },
+    { wifi_essid,       " %s", "wlp1s0" },
+	// wlan on / off
+    { run_command,      " [ %s ]  •", "/usr/local/bin/radioctl --get wlan"},
+	// battery
+    { battery_perc,     "  ⚡ %s", "BAT0" },
 	{ battery_remaining,"%s", "BAT0" },
-	{ datetime,         " •  %16s  ", "%d.%m.%Y %H:%M" },
+	// datetime
+    { datetime,         "  •  %16s  ", "%d.%m.%Y %H:%M" },
+	/*
+     * DELIMITER ';'
+     * xsetroot -name "top text;bottom text"
+     */
+    { run_command,      "%s", "echo ';'"},
+	/*
+     * secondary bar (bottom bar)
+     */
+    // kernel
+    { kernel_release,   " %s  •", NULL },
+	// uptime
+    { uptime,           "  %s  •", NULL },
+    // disk usage
+	{ disk_used,        "  HDD %s /", "/" },
+	{ disk_total,       " %s ", "/" },
+	{ disk_perc,        " [ %3s%% ]  •", "/" },
+    // ram usage
+	{ ram_used,         "  RAM %s /", NULL },
+	{ ram_total,        " %s ", NULL },
+	{ ram_perc,         " [ %2s%% ]  •", NULL },
+	// cpu
+    { cpu_perc,         "  CPU  [ %2s%% ]  •", NULL },
+    { load_avg,         "  %12s   •", NULL },
+	// ip addr
+    { ipv4,             "  %s  •", "wlp1s0" },
+    // netspeed up down
+	{ netspeed_tx,      "  ↑ %3s", "wlp1s0" },
+    { netspeed_rx,      "  ↓ %3s", "wlp1s0" },
 };

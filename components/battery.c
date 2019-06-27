@@ -4,15 +4,35 @@
 
 #include "../util.h"
 
+/* battery style
+ * 1 = Show only percent
+ * 2 = Show only battery symbol
+ * 3 = Show both (symbol + percent)
+ */
+const unsigned int battery_style = 3;
+
 #if defined(__linux__)
 	#include <limits.h>
 	#include <stdint.h>
 	#include <unistd.h>
- 
+
+    /*
+     * only available with the status2d patch
+     */
     static const char
     *d_bar(unsigned char p)
     {
-        const char *s[] = { "▁", "▂", "▃", "▄", "▅", "▆", "▇", "█", "█" };
+        const char *s[] = {
+            "^c#ac444d^^r0,10,25,12^^c#4b555a^^r1,11,23,10^^f25^^c#ac444d^^r0,13,2,6^^f4^^c#8b9499^",//  0-10%
+            "^c#d0661c^^r0,10,25,12^^c#4b555a^^r1,11,21,10^^f25^^c#d0661c^^r0,13,2,6^^f4^^c#8b9499^",// 10-20%
+            "^c#8b9499^^r0,10,25,12^^c#4b555a^^r1,11,18,10^^f25^^c#8b9499^^r0,13,2,6^^f4^",// 30-40%
+            "^c#8b9499^^r0,10,25,12^^c#4b555a^^r1,11,15,10^^f25^^c#8b9499^^r0,13,2,6^^f4^",// 40-50%
+            "^c#8b9499^^r0,10,25,12^^c#4b555a^^r1,11,12,10^^f25^^c#8b9499^^r0,13,2,6^^f4^",// 50-60%
+            "^c#8b9499^^r0,10,25,12^^c#4b555a^^r1,11,9,10^^f25^^c#8b9499^^r0,13,2,6^^f4^",// 60-70%
+            "^c#8b9499^^r0,10,25,12^^c#4b555a^^r1,11,6,10^^f25^^c#8b9499^^r0,13,2,6^^f4^",// 70-80%
+            "^c#8b9499^^r0,10,25,12^^c#4b555a^^r1,11,3,10^^f25^^c#8b9499^^r0,13,2,6^^f4^",// 80-90%
+            "^c#8b9499^^r0,10,25,12^^c#4b555a^^r1,11,0,10^^f25^^c#8b9499^^r0,13,2,6^^f4^" // 90-100%
+        };
 
         return s[((8 * p) / 100)];
     }
@@ -48,7 +68,16 @@
 			return NULL;
 		}
 
-		return bprintf("%s %3d%%", d_bar(perc), perc);
+        if (battery_style == 1)  {
+		    return bprintf("%3d%%", perc);
+        } else if (battery_style == 2) {
+		    return bprintf("%s", d_bar(perc));
+        } else if (battery_style == 3) {
+		    return bprintf("%s %3d%%", d_bar(perc), perc);
+        } else {
+            // fallback: if battery_style not specified
+		    return bprintf("%3d%%", perc);
+        }
 	}
 
 	const char *
@@ -118,7 +147,7 @@
 			h = timeleft;
 			m = (timeleft - (double)h) * 60;
 
-			return bprintf(" [ %juh %jum ] ", h, m);
+			return bprintf(" [ %juh %jum ]", h, m);
 		}
 
 		return "";

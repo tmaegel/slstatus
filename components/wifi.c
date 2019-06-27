@@ -8,6 +8,13 @@
 
 #include "../util.h"
 
+/* wifi style
+ * 1 = Show only percent
+ * 2 = Show only wifi symbol
+ * 3 = Show both (symbol + percent)
+ */
+const unsigned int wifi_style = 2;
+
 #define RSSI_TO_PERC(rssi) \
 			rssi >= -50 ? 100 : \
 			(rssi <= -100 ? 0 : \
@@ -17,10 +24,24 @@
 	#include <limits.h>
 	#include <linux/wireless.h>
 
+    /*
+     * only available with the status2d patch
+     */
+    static const char *d_dots(unsigned char q) {
+        const char *s[] = {
+            "^r0,20,4,4^^f6^^c#4b555a^^r0,16,4,8^^f6^^r0,12,4,12^^f6^^r0,8,4,16^^f6^^c#8b9499^",//  0-25%
+            "^r0,20,4,4^^f6^^r0,16,4,8^^f6^^c#4b555a^^r0,12,4,12^^f6^^r0,8,4,16^^f6^^c#8b9499^",// 25-50%
+            "^r0,20,4,4^^f6^^r0,16,4,8^^f6^^r0,12,4,12^^f6^^c#4b555a^^r0,8,4,16^^f6^^c#8b9499^",// 50-75%
+            "^r0,20,4,4^^f6^^r0,16,4,8^^f6^^r0,12,4,12^^f6^^r0,8,4,16^^f6^"                     // 75-100%
+        };
+
+        return s[((3 * q) / 100)];
+    }
+
 	const char *
 	wifi_perc(const char *interface)
 	{
-		int cur;
+		int cur, perc;
 		size_t i;
 		char *p, *datastart;
 		char path[PATH_MAX];
@@ -63,9 +84,20 @@
 		sscanf(datastart + 1, " %*d   %d  %*d  %*d\t\t  %*d\t   "
 		       "%*d\t\t%*d\t\t %*d\t  %*d\t\t %*d", &cur);
 
-		/* 70 is the max of /proc/net/wireless */
-		return bprintf("%d", (int)((float)cur / 70 * 100));
-	}
+        /* 70 is the max of /proc/net/wireless */
+        perc = (int)((float)cur / 70 * 100);
+
+	    if (wifi_style == 1)  {
+		    return bprintf("%3d%%", perc);
+        } else if (wifi_style == 2) {
+		    return bprintf("%s", d_dots(perc));
+        } else if (wifi_style == 3) {
+		    return bprintf("%s %3d%%", d_dots(perc), perc);
+        } else {
+            // fallback: if wifi_style not specified
+		    return bprintf("%3d%%",perc);
+        }
+    }
 
 	const char *
 	wifi_essid(const char *interface)
