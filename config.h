@@ -67,49 +67,41 @@ static const struct arg args[] = {
 	/*
      * primary bar (topbar)
      */
+    // slock
+    { run_command,      "%s", "pgrep slock > /dev/null && echo '\uE26F' || echo ' '"},
+    // Updates
+    { run_command,      "   \uE00E %s", "cat /tmp/checkupdates"},
+    // mails
+    { run_command,      "   \uE073 %s", "echo '0'"},
     // volume
-    { run_command,      "  ♫ %s", "amixer get Master | grep 'Mono:' | awk -F'[][]' '{print $2}'"},
-	{ run_command,      " [ %s ]  •", "amixer get Master | grep 'Mono:' | awk -F'[][]' '{print $6}'"},
+    { run_command,      "   \uE094 %s", "amixer get Master | grep 'Mono:' | awk -F'[][]' '{print $2}'"},
+	{ run_command,      " [%s]", "amixer get Master | grep 'Mono:' | awk -F'[][]' '{print $6}'"},
 	// brightness
-    { run_command,      "  ☼ %s%%  •", "xbacklight -get | awk '{print int($1+0.5)}'"},
+    { run_command,      "   \uE1C3 %s%%", "xbacklight -get | awk '{print int($1+0.5)}'"},
 	// bluetooth on / off
-    { run_command,      "  BT [ %s ]  •", "/usr/local/bin/radioctl --get bluetooth"},
+    { run_command,      "   \uE1B5 [%s]", "/usr/local/bin/radioctl --get bluetooth"},
 	// wifi
-	{ wifi_perc,        "  %s", "wlp1s0" },
-    { wifi_essid,       " %s", "wlp1s0" },
+	// { wifi_perc,        "  %s", "wlp1s0" },
+    { wifi_essid,       "   \uE0F0 %s", "wlp1s0" },
 	// wlan on / off
-    { run_command,      " [ %s ]  •", "/usr/local/bin/radioctl --get wlan"},
+    { run_command,      " [%s]", "/usr/local/bin/radioctl --get wlan"},
+    // ram
+	{ ram_perc,         "   \uE020 %s%%", NULL },
+	// cpu
+    { cpu_perc,         "   \uE026 %s%%", NULL },
 	// battery
-    { battery_perc,     "  ⚡ %s", "BAT0" },
+    { battery_perc,     "   \uE238 %s", "BAT0" },
 	{ battery_remaining,"%s", "BAT0" },
-	// datetime
-    { datetime,         "  •  %16s  ", "%d.%m.%Y %H:%M" },
+	// date
+    { datetime,         "   \uE226 %s", "%d.%m.%Y" },
+	// time
+    { datetime,         "   \uE016 %s ", "%H:%M" },
 	/*
      * DELIMITER ';'
      * xsetroot -name "top text;bottom text"
      */
-    { run_command,      "%s", "echo ';'"},
+    //{ run_command,      "%s", "echo ';'"},
 	/*
      * secondary bar (bottom bar)
      */
-    // kernel
-    { kernel_release,   " %s  •", NULL },
-	// uptime
-    { uptime,           "  %s  •", NULL },
-    // disk usage
-	{ disk_used,        "  HDD %s /", "/" },
-	{ disk_total,       " %s ", "/" },
-	{ disk_perc,        " [ %3s%% ]  •", "/" },
-    // ram usage
-	{ ram_used,         "  RAM %s /", NULL },
-	{ ram_total,        " %s ", NULL },
-	{ ram_perc,         " [ %2s%% ]  •", NULL },
-	// cpu
-    { cpu_perc,         "  CPU  [ %2s%% ]  •", NULL },
-    { load_avg,         "  %12s   •", NULL },
-	// ip addr
-    { ipv4,             "  %s  •", "wlp1s0" },
-    // netspeed up down
-	{ netspeed_tx,      "  ↑ %3s", "wlp1s0" },
-    { netspeed_rx,      "  ↓ %3s", "wlp1s0" },
 };
